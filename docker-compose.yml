@@ -1,8 +1,65 @@
 version: '3.4'
 
 services:
-  store2018:
-    image: ${DOCKER_REGISTRY-}store2018
+  accountservice:
+    image: akalia1988/accountservice:latest
     build:
-      context: .
-      dockerfile: Store2018/Dockerfile
+      context: ./Services/AccountService
+      dockerfile: Dockerfile
+    ports:
+     - "5001:5001" 
+    networks:
+      store2018network:
+        ipv4_address: 172.19.10.101
+
+  inventoryService:
+    image: akalia1988/inventoryservice:latest
+    build:
+      context: ./Services/InventoryService
+      dockerfile: Dockerfile
+    ports:
+     - "5002:5002" 
+    networks:
+      store2018network:
+        ipv4_address: 172.19.10.102
+
+
+  shoppingservice:
+     image: akalia1988/shoppingservice:latest
+     build:
+       context: ./Services/ShoppingService
+       dockerfile: Dockerfile
+     ports:
+     - "5003:5003" 
+     networks:
+      store2018network:
+        ipv4_address: 172.19.10.103
+
+  store2018:
+    image: akalia1988/store2018:latest
+    environment:
+        ACCOUNT_SERVICE_API_BASE: http://172.19.10.101:5001/api
+        INVENTORY_SERVICE_API_BASE: http://172.19.10.102:5002/api
+        SHOPPING_SERVICE_API_BASE: http://172.19.10.103:5003/api
+    build:
+      context: ./Store2018
+      dockerfile: Dockerfile
+    ports:
+     - "5004:5004" 
+    networks:
+      store2018network:
+        ipv4_address: 172.19.10.100
+
+networks:
+  store2018network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/16
+
+
+
+
+
+  

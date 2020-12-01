@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  store2018:
+    image: ${DOCKER_REGISTRY-}store2018
+    build:
+      context: .
+      dockerfile: Store2018/Dockerfile
